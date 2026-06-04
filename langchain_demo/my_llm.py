@@ -29,13 +29,13 @@ from env_utils import LOCAL_BASE_URL, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, OPENA
 # )
 
 # 本地私有化部署的大模型
-llm = ChatOpenAI(
-    model='qwen3-8b',
-    temperature=0.8,
-    api_key='xx',
-    base_url=LOCAL_BASE_URL,
-    extra_body={'chat_template_kwargs': {'enable_thinking': False}},
-)
+# llm = ChatOpenAI(
+#     model='qwen3-8b',
+#     temperature=0.8,
+#     api_key='xx',
+#     base_url=LOCAL_BASE_URL,
+#     extra_body={'chat_template_kwargs': {'enable_thinking': False}},
+# )
 
 # llm = ChatOpenAI(
 #     model='ds-qwen3-8b',
@@ -43,6 +43,12 @@ llm = ChatOpenAI(
 #     api_key='',
 #     base_url=LOCAL_BASE_URL
 # )
+llm = ChatOpenAI(
+    model='openai/gpt-oss-120b',
+    temperature=0.8,
+    api_key=OPENAI_API_KEY,
+    base_url=OPENAI_BASE_URL
+)
 
 multiModal_llm = ChatOpenAI(  # 多模态大模型
     model='qwen-omni-3b',
