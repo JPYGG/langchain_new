@@ -22,7 +22,7 @@ def get_session_history(session_id: str):
     """从关系型数据库的历史消息列表中 返回当前会话 的所有历史消息"""
     return SQLChatMessageHistory(
         session_id=session_id,
-        connection_string='sqlite:///chat_history.db',
+        connection='sqlite:///chat_history.db',
     )
 
 
@@ -104,8 +104,7 @@ final_chain = (RunnablePassthrough.assign(messages_summarized=summarize_messages
 def add_message(chat_history, user_message):
     if user_message:
         chat_history.append({"role": "user", "content": user_message})
-    return chat_history, gr.Textbox(value=None, interactive=False)
-
+    return chat_history, gr.Textbox(value="", interactive=True)
 
 def execute_chain(chat_history):
     input = chat_history[-1]
@@ -113,30 +112,65 @@ def execute_chain(chat_history):
                                             config={"configurable": {"session_id": "user123"}})
     chat_history.append({'role': 'assistant', 'content': result.content})
     return chat_history
+#
+#
+# # 开发一个聊天机器人的Web界面
+# with gr.Blocks(title='多模态聊天机器人', theme=gr.themes.Soft()) as block:
+#
+#     # 聊天历史记录的组件
+#     chatbot = gr.Chatbot(type='messages', height=500, label='聊天机器人')
+#
+#     with gr.Row():
+#
+#         # 文字输入的区域
+#         with gr.Column(scale=4):
+#             user_input = gr.Textbox(placeholder='请给机器人发送消息...', label='文字输入', max_lines=5)
+#
+#             submit_btn = gr.Button('发送', variant="primary")
+#
+#         with gr.Column(scale=1):
+#             audio_input = gr.Audio(sources=['microphone'], label='语音输入', type='filepath', format='wav')
+#
+#
+#     chat_msg = user_input.submit(add_message, [chatbot, user_input], [chatbot, user_input])
+#     chat_msg.then(execute_chain, chatbot, chatbot)
 
 
-# 开发一个聊天机器人的Web界面
-with gr.Blocks(title='多模态聊天机器人', theme=gr.themes.Soft()) as block:
 
-    # 聊天历史记录的组件
-    chatbot = gr.Chatbot(type='messages', height=500, label='聊天机器人')
+# def execute_chain(history):
+#     #     input = chat_history[-1]
+#     #     result = final_chain.invoke({'input': input['content'], "config": {"configurable": {"session_id": "user123"}}},
+#     #                                             config={"configurable": {"session_id": "user123"}})
+#     #     chat_history.append({'role': 'assistant', 'content': result.content})
+#     # 逻辑处理
+#     # 修改最后一条（助手）消息
+#     input = history[-1]
+#     result = final_chain.invoke({'input': input['content'], "config": {"configurable": {"session_id": "user123"}}},
+#                                                 config={"configurable": {"session_id": "user123"}})
+#     history.append({'role': 'assistant', 'content': result.content})
+#     return history
+with gr.Blocks(title='多模态聊天机器人') as block:
+    # 这里的参数只需保留布局相关的 (height, label)
+    chatbot = gr.Chatbot(height=500, label='聊天机器人')
 
     with gr.Row():
-
-        # 文字输入的区域
         with gr.Column(scale=4):
             user_input = gr.Textbox(placeholder='请给机器人发送消息...', label='文字输入', max_lines=5)
-
             submit_btn = gr.Button('发送', variant="primary")
-
         with gr.Column(scale=1):
             audio_input = gr.Audio(sources=['microphone'], label='语音输入', type='filepath', format='wav')
 
-
-    chat_msg = user_input.submit(add_message, [chatbot, user_input], [chatbot, user_input])
-    chat_msg.then(execute_chain, chatbot, chatbot)
-
+    gr.on(
+        triggers=[submit_btn.click, user_input.submit],
+        fn=add_message,
+        inputs=[chatbot, user_input],
+        outputs=[chatbot, user_input]
+    ).then(
+        fn=execute_chain,
+        inputs=[chatbot],
+        outputs=[chatbot]
+    )
 
 
 if __name__ == '__main__':
-    block.launch()
+    block.launch(share=True)
