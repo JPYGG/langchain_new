@@ -1,6 +1,7 @@
 from langchain_openai import ChatOpenAI
 
-from env_utils import LOCAL_BASE_URL, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, OPENAI_API_KEY, OPENAI_BASE_URL
+from env_utils import LOCAL_BASE_URL, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, OPENAI_API_KEY, OPENAI_BASE_URL, \
+    GEMINI_API_KEY, GEMINI_BASE_URL
 
 # openai的大模型
 # llm = ChatOpenAI(
@@ -50,8 +51,14 @@ llm = ChatOpenAI(
     base_url=OPENAI_BASE_URL
 )
 
+# multiModal_llm = ChatOpenAI(  # 多模态大模型
+#     model='qwen-omni-3b',
+#     api_key='xx',
+#     base_url=LOCAL_BASE_URL,
+# )
+
 multiModal_llm = ChatOpenAI(  # 多模态大模型
-    model='qwen-omni-3b',
-    api_key='xx',
-    base_url=LOCAL_BASE_URL,
+    model='gemini-3.5-flash',
+    api_key=GEMINI_API_KEY,
+    base_url=GEMINI_BASE_URL,
 )

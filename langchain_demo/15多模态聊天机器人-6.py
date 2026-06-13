@@ -1,5 +1,6 @@
 import base64
 
+import requests
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -138,36 +139,46 @@ def read_audio(audio_message):
         #     print(text)
         #     return text
     #     gemini-3.1-flash-live-preview
-        client = OpenAI(
-            api_key=GEMINI_API_KEY,
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-        )
+    #     client = OpenAI(
+    #         api_key=GEMINI_API_KEY,
+    #         base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    #     )
         with open(audio_message, "rb") as audio_file:
             base64_audio = base64.b64encode(audio_file.read()).decode('utf-8')
-            response = client.chat.completions.create(
-                model="gemini-3.5-flash",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "Transcribe this audio",
-                            },
-                            {
-                                "type": "input_audio",
-                                "input_audio": {
-                                    "data": base64_audio,
-                                    "format": "wav"
-                                }
-                            }
-                        ],
-                    }
-                ],
-            )
+            # response = client.chat.completions.create(
+            #     model="gemini-3.5-flash",
+            #     messages=[
+            #         {
+            #             "role": "user",
+            #             "content": [
+            #                 {
+            #                     "type": "text",
+            #                     "text": "Transcribe this audio",
+            #                 },
+            #                 {
+            #                     "type": "input_audio",
+            #                     "input_audio": {
+            #                         "data": base64_audio,
+            #                         "format": "wav"
+            #                     }
+            #                 }
+            #             ],
+            #         }
+            #     ],
+            # )
+            url = "https://api.siliconflow.cn/v1/audio/transcriptions"
+            headers = {
+                "Authorization": "Bearer sk-rslbuwuefigngpyvfdademxurgxltnddojtsxodfgguqbzcw"
+            }
+            with open(audio_message, "rb") as audio_file:
+                files = {
+                    "file": ("audio.mp3", audio_file),  # 根据文件类型调整 MIME 类型
+                    "model": (None, "TeleAI/TeleSpeechASR")
+                }
+                response = requests.post(url, headers=headers, files=files)
 
-            print(response.choices[0].message.content)
-            return response.choices[0].message.content
+                print(response.json())
+                return response.json()['text']
 
 
 # 开发一个聊天机器人的Web界面
