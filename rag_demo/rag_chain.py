@@ -122,14 +122,14 @@ conversational_rag_chain = RunnableWithMessageHistory(
 )
 
 # 调用会话式RAG链，询问"什么是任务分解？"
-# resp1 = conversational_rag_chain.invoke(
-#     {"input": "What is Task Decomposition?"},  # 用户输入问题
-#     config={
-#         "configurable": {"session_id": "abc123"}  # 使用会话ID "abc123" 保持对话历史
-#     }
-# )
-#
-# print(resp1['answer'])
+resp1 = conversational_rag_chain.invoke(
+    {"input": "What is Task Decomposition?"},  # 用户输入问题
+    config={
+        "configurable": {"session_id": "abc123"}  # 使用会话ID "abc123" 保持对话历史
+    }
+)
+
+print(resp1['answer'])
 
 resp2 = conversational_rag_chain.invoke(
     {"input": "What are common ways of doing it?"},  # 用户输入问题
